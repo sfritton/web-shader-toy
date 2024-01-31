@@ -1,0 +1,161 @@
+<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="0" stdDeviation="0.4" flood-opacity="0.4" />
+    </filter>
+  </defs>
+  <style>
+    :root {
+      --duration: 1s;
+      --delay: 0ms;
+      --animation-name: unset;
+    }
+
+    @media (max-width: 47px) {
+      path {
+        fill: #fff;
+      }
+    }
+
+    @media (min-width: 48px) {
+      path {
+        filter: url(#shadow);
+      }
+    }
+
+    /* Use @supports to disable animations in Safari */
+    @supports (d: path("M1 2")) {
+      path {
+        animation-duration: var(--duration);
+        animation-delay: var(--delay);
+        animation-timing-function: ease-in-out;
+        animation-fill-mode: both;
+      }
+    }
+
+    #s-top-left {
+      animation-name: var(--animation-name, s-top-left);
+    }
+
+    #s-top-right {
+      animation-name: s-top-right;
+    }
+
+    #s-bottom-right {
+      animation-name: s-bottom-right;
+    }
+
+    #s-bottom-left {
+      animation-name: s-bottom-left;
+    }
+
+    #s-top {
+      animation-name: s-top;
+    }
+
+    #s-middle {
+      animation-name: s-middle;
+    }
+
+    #s-bottom {
+      animation-name: s-bottom;
+    }
+
+    #f-tall {
+      animation-name: f-tall;
+    }
+
+    #f-top {
+      animation-name: f-top;
+    }
+
+    #f-middle {
+      animation-name: f-middle;
+    }
+
+    #f-short {
+      animation-name: f-short;
+    }
+
+    @keyframes s-top-left {
+      from {
+        d: path("M5 15 L7 7 L9 26 L5 19Z");
+      }
+    }
+
+    @keyframes s-top-right {
+      from {
+        d: path("M21.7 5 L13.7 3.2 L21 -1 L24 4Z");
+        fill: #fff;
+      }
+    }
+
+    @keyframes s-bottom-right {
+      from {
+        d: path("M22.5 30 L18.5 22.5 L18.5 43 L22.5 36Z");
+      }
+    }
+
+    @keyframes s-bottom-left {
+      from {
+        d: path("M2 42 L3.8 41 L11.3 45.5 L4 48Z");
+        fill: #fff;
+      }
+    }
+
+    @keyframes s-top {
+      from {
+        d: path("M7 7 L5 15 L22 5 L14 3Z");
+        filter: none;
+      }
+    }
+
+    @keyframes s-middle {
+      from {
+        d: path("M18.5 22.5 L5 19 L9 26 L22.5 30Z");
+      }
+    }
+
+    @keyframes s-bottom {
+      from {
+        d: path("M3.5 41 L22.5 36 L18.5 43 L11 45.5Z");
+        filter: none;
+      }
+    }
+
+    @keyframes f-tall {
+      from {
+        d: path("M26 8 L26 30 L32 30 L32 2Z");
+      }
+    }
+
+    @keyframes f-top {
+      from {
+        d: path("M32 2 L26 8 L46 8 L46 2Z");
+      }
+    }
+
+    @keyframes f-middle {
+      from {
+        d: path("M34 46 L28 40 L42 40 L42 46Z");
+      }
+    }
+
+    @keyframes f-short {
+      from {
+        d: path("M28 40 L26 29.7 L32 29.7 L34 46Z");
+      }
+    }
+  </style>
+  <path id="s-top-left" d="M2 16 L8 10 L8 26 L2 20Z" fill="#eee" />
+  <path id="s-top-right" d="M22 16 L16 10 L16 18 L22 18Z" fill="#eee" />
+  <path id="s-bottom-right" d="M22 26 L16 20 L16 38 L22 32Z" fill="#eee" />
+  <path id="s-bottom-left" d="M2 30 L2 32 L8 38 L8 30Z" fill="#eee" />
+  <path id="s-top" d="M8 10 L2 16 L22 16 L16 10Z" fill="#fff" />
+  <path id="s-middle" d="M16 20 L2 20 L8 26 L22 26Z" fill="#fff" />
+  <path id="s-bottom" d="M2 32 L22 32 L16 38 L8 38Z" fill="#fff" />
+  <path id="f-tall" d="M26 16 L26 38 L32 38 L32 10Z" fill="#ddd" />
+  <path id="f-top" d="M32 10 L26 16 L46 16 L46 10Z" fill="#fff" />
+  <path id="f-short" d="M28 26 L26 38 L32 38 L34 20Z" fill="#eee" />
+  <path id="f-middle" d="M34 20 L28 26 L42 26 L42 20Z" fill="#fff" />
+</svg>

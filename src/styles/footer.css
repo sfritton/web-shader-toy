@@ -1,0 +1,74 @@
+footer {
+  scroll-snap-align: start;
+  background: #000;
+  color: #fff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px 20px;
+  gap: 8vh;
+  gap: 8svh;
+  text-align: center;
+
+  /* This fixes the Chrome bug where the selected tab obscures the footer */
+  position: relative;
+
+  & div {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 36px;
+
+    & a {
+      transition: transform 300ms, background 300ms;
+      padding: 6px;
+      border-radius: 8px;
+      position: relative;
+
+      &.github {
+        border-radius: 50%;
+        padding: 5px 6px 7px;
+      }
+
+      & img {
+        display: block;
+        width: 64px;
+
+        &.codepen {
+          width: 138px;
+        }
+      }
+
+      & .label {
+        position: absolute;
+        top: calc(100% + 2px);
+        left: -100px;
+        right: -100px;
+        text-align: center;
+        display: block;
+        font-size: 14px;
+        color: #fff;
+        opacity: 0;
+        transition: opacity 300ms;
+      }
+
+      &:focus {
+        outline: none;
+      }
+
+      &:focus-visible,
+      &:hover {
+        transform: scale(1.1);
+        background: #222;
+
+        & .label {
+          opacity: 1;
+        }
+      }
+    }
+  }
+}

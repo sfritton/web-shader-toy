@@ -1,0 +1,9 @@
+.DS_STORE
+data.js
+node_modules
+.*cache*
+.npmrc
+
+# Build output
+dist
+docs

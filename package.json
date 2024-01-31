@@ -1,0 +1,47 @@
+{
+  "name": "web-shader-toy",
+  "version": "1.0.0",
+  "description": "A prototye to test out WGSL shaders",
+  "source": "src/index.html",
+  "scripts": {
+    "start": "parcel",
+    "build": "parcel build",
+    "publish": "echo '\nBUILDING...\n' && npm run build && echo '\nPUBLISHING...\n' && git add -Af docs && git commit --allow-empty -m 'Publish' && git push && echo '\nPUBLISHED.'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sfritton/web-shader-toy.git"
+  },
+  "author": "Sam Fritton",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sfritton/web-shader-toy/issues"
+  },
+  "homepage": "https://github.com/sfritton/web-shader-toy#readme",
+  "devDependencies": {
+    "@parcel/transformer-inline-string": "^2.9.3",
+    "@types/debounce": "^1.2.1",
+    "@types/seedrandom": "^3.0.8",
+    "parcel": "^2.9.3",
+    "posthtml-doctype": "^1.1.1",
+    "posthtml-include": "^1.7.4",
+    "typescript": "^5.1.6"
+  },
+  "browserslist": "> 0.15% in US and not dead and supports es6-module, safari > 11, last 12 firefox versions, last 12 chrome versions, last 12 edge versions",
+  "targets": {
+    "default": {
+      "distDir": "./docs",
+      "publicUrl": "./",
+      "optimize": false,
+      "outputFormat": "esmodule"
+    }
+  },
+  "@parcel/transformer-css": {
+    "drafts": {
+      "nesting": true
+    }
+  },
+  "dependencies": {
+    "@webgpu/types": "^0.1.40"
+  }
+}
