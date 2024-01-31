@@ -1,10 +1,8 @@
-# Cave Generator
+# web-shader-toy
 
-An exploration into generating caves with the Cellular Automata algorithm.
+A playground for exploring WebGPU and WGSL.
 
-Check out the [deployed site](https://sfritton.github.io/cave-generator).
-
-![A cave generated with Cellular Automata](cave.png)
+Check out the [deployed site](https://sfritton.github.io/web-shader-toy).
 
 ## Running it locally
 
@@ -16,4 +14,3 @@ npm start
 ## Dependencies
 
 - [Parcel](https://parceljs.org/)
-# web-shader-toy
