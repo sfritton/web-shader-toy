@@ -15,6 +15,31 @@
   <body>
     <main>
       <h1>Web Shader Toy</h1>
+      <div class="error-box">
+        <div id="no-web-gpu">
+          <h3>❌ Your browser does not support WebGPU</h3>
+          <p>
+            Try the latest version of Chrome or see a list of supported browsers
+            <a href="https://caniuse.com/?search=webgpu">here</a>.
+          </p>
+        </div>
+        <div id="no-adapter">
+          <h3>❌ Unable to request WebGPU adapter</h3>
+          <p>
+            It's still unclear to me what the cause of this error might be. Try refreshing the page.
+          </p>
+        </div>
+        <div id="no-device">
+          <h3>❌ Unable to request WebGPU logical device</h3>
+          <p>
+            It's still unclear to me what the cause of this error might be. Try refreshing the page.
+          </p>
+        </div>
+        <div id="no-canvas">
+          <h3>❌ Unable to find canvas element</h3>
+          <p>This shouldn't be possible. Try refreshing the page.</p>
+        </div>
+      </div>
       <canvas width="2048" height="2048">hello</canvas>
     </main>
     <include src="./src/parts/footer.part.html"></include>

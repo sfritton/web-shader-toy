@@ -1,5 +1,5 @@
 export abstract class Shader {
-  private _context: GPUCanvasContext | null = null;
+  private _context: GPUCanvasContext | null | undefined = undefined;
   device!: GPUDevice;
   canvasFormat!: GPUTextureFormat;
   updateInterval: number = 200;
@@ -13,22 +13,37 @@ export abstract class Shader {
 
   // Make sure WebGPU is supported, set up the device and the canvas
   async init(canvas: HTMLCanvasElement | null) {
-    if (!navigator.gpu) throw Error('WebGPU not supported');
+    if (!navigator.gpu) {
+      document.getElementById('no-web-gpu')?.classList.add('visible');
+      throw Error('WebGPU not supported');
+    }
 
     const adapter = await navigator.gpu.requestAdapter();
 
-    if (!adapter) throw Error("Couldn't request WebGPU adapter");
-    if (!canvas) throw Error("Couldn't find the canvas");
+    if (!adapter) {
+      document.getElementById('no-adapter')?.classList.add('visible');
+      throw Error("Couldn't request WebGPU adapter");
+    }
 
-    this.device = await adapter.requestDevice();
-    this._context = canvas.getContext('webgpu');
+    const device = await adapter.requestDevice();
+    if (!device) {
+      document.getElementById('no-device')?.classList.add('visible');
+      throw Error('Couldn’t request WebGPU logical device.');
+    }
+
+    this.device = device;
+
+    this._context = canvas?.getContext('webgpu');
 
     this.canvasFormat = navigator.gpu.getPreferredCanvasFormat();
     this._context?.configure({ device: this.device, format: this.canvasFormat });
   }
 
   get context() {
-    if (!this._context) throw Error("Couldn't get canvas context");
+    if (!this._context) {
+      document.getElementById('no-canvas')?.classList.add('visible');
+      throw Error("Couldn't get canvas context");
+    }
 
     return this._context;
   }
