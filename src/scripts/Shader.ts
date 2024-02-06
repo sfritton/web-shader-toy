@@ -3,11 +3,26 @@ export abstract class Shader {
   device!: GPUDevice;
   canvasFormat!: GPUTextureFormat;
   updateInterval: number = 200;
+  shouldRequestAnimationFrame = false;
+  prevMS: number | undefined = undefined;
 
   constructor(canvas: HTMLCanvasElement | null) {
     this.init(canvas).then(() => {
       this.setup();
-      setInterval(() => this.update(), this.updateInterval);
+      if (this.shouldRequestAnimationFrame) {
+        const step = (currMS: number) => {
+          if (this.prevMS === undefined) this.prevMS = currMS;
+          const deltaT = currMS - this.prevMS;
+          this.prevMS = currMS;
+
+          requestAnimationFrame(step);
+          this.update(deltaT);
+        };
+
+        requestAnimationFrame(step);
+      } else {
+        setInterval(() => this.update(), this.updateInterval);
+      }
     });
   }
 
@@ -52,5 +67,5 @@ export abstract class Shader {
   abstract setup(): void;
 
   /** Put render step here. This will be run every 200ms */
-  abstract update(): void;
+  abstract update(deltaT?: number): void;
 }

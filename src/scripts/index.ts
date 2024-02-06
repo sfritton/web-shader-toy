@@ -1,5 +1,5 @@
-import { GameOfLifeShader } from './GameOfLife';
+import { FlameShader } from './FlameShader';
 
 const canvas = document.querySelector<HTMLCanvasElement>('canvas');
 
-new GameOfLifeShader(canvas);
+new FlameShader(canvas);
