@@ -83,7 +83,7 @@ const $4e939e94d233ed5b$export$c4293a6a9b6ab33a = (radius)=>{
 
 const $c8a6c04c3ac47780$var$WORKGROUP_SIZE = 64;
 const $c8a6c04c3ac47780$var$PARTICLE_SIZE = 0.1;
-const $c8a6c04c3ac47780$var$PARTICLE_COUNT = $c8a6c04c3ac47780$var$WORKGROUP_SIZE * 512;
+const $c8a6c04c3ac47780$var$PARTICLE_COUNT = $c8a6c04c3ac47780$var$WORKGROUP_SIZE * 256;
 const $c8a6c04c3ac47780$var$SPEED = 0.004;
 const $c8a6c04c3ac47780$var$GRAVITY = 0.005;
 const $c8a6c04c3ac47780$var$PARTICLE_INTERVAL = 5;
@@ -444,4 +444,4 @@ const $35d6c5b58b8fcd66$var$canvas = document.querySelector("canvas");
 new (0, $c8a6c04c3ac47780$export$b9202086c45b387e)($35d6c5b58b8fcd66$var$canvas);
 
 
-//# sourceMappingURL=index.47c87e5f.js.map
+//# sourceMappingURL=index.3e9ac906.js.map
