@@ -1,10 +1,9 @@
 import { Shader } from './Shader';
+import { pointOnCircle, randomVector } from './util';
 
 const WORKGROUP_SIZE = 64;
-const PARTICLE_SIZE = 0.03;
+const PARTICLE_SIZE = 0.1;
 const PARTICLE_COUNT = WORKGROUP_SIZE * 512;
-const PARTICLE_WIDTH = 0.6;
-const PARTICLE_CENTER_Y = -0.4;
 const SPEED = 0.004;
 const GRAVITY = 0.005;
 const PARTICLE_INTERVAL = 5;
@@ -12,22 +11,24 @@ const DECAY_RATE = 0.004;
 const ORIGIN_RADIUS = 0.2;
 const ORIGIN_Y = -0.4;
 
-const VERTICES = new Float32Array([
-  // Triangle 1 [ x,y, x,y, ...]
-  -PARTICLE_WIDTH,
-  PARTICLE_CENTER_Y,
-  0,
-  -1,
-  PARTICLE_WIDTH,
-  PARTICLE_CENTER_Y,
-  // Triangle 2 [ x,y, x,y, ...]
-  -PARTICLE_WIDTH,
-  PARTICLE_CENTER_Y,
-  PARTICLE_WIDTH,
-  PARTICLE_CENTER_Y,
-  0,
-  1,
-]);
+const TRIANGLE_COUNT = 32;
+const THETA = (2 * Math.PI) / TRIANGLE_COUNT;
+const VERTICES = new Float32Array(TRIANGLE_COUNT * 6); // 6 for the x,y coordinates of the three points on the triangle
+
+for (let triangleIndex = 0; triangleIndex < TRIANGLE_COUNT; triangleIndex++) {
+  const i = triangleIndex * 6;
+  const point1 = pointOnCircle(1, triangleIndex * THETA);
+  const point2 = pointOnCircle(1, (triangleIndex + 1) * THETA);
+
+  VERTICES[i] = 0;
+  VERTICES[i + 1] = 0;
+
+  VERTICES[i + 2] = point1.x;
+  VERTICES[i + 3] = point1.y;
+
+  VERTICES[i + 4] = point2.x;
+  VERTICES[i + 5] = point2.y;
+}
 
 export class FlameShader extends Shader {
   vertexBuffer!: GPUBuffer;
@@ -83,18 +84,9 @@ export class FlameShader extends Shader {
      */
     const particleStates = new Float32Array(PARTICLE_COUNT * PARTICLE_INTERVAL);
 
-    const randomVector = () => {
-      const radius = Math.sqrt(Math.random()) * ORIGIN_RADIUS;
-      const angle = Math.random() * 2 * Math.PI;
-      const x = radius * Math.cos(angle);
-      const y = radius * Math.sin(angle);
-
-      return { x, y };
-    };
-
     for (let i = 0; i < particleStates.length; i += PARTICLE_INTERVAL) {
-      const position = randomVector();
-      const velocity = randomVector();
+      const position = randomVector(ORIGIN_RADIUS);
+      const velocity = randomVector(ORIGIN_RADIUS);
 
       particleStates[i] = position.x;
       particleStates[i + 1] = position.y + ORIGIN_Y;
@@ -262,7 +254,7 @@ export class FlameShader extends Shader {
         struct VertexOutput {
           @builtin(position) pos: vec4f,
           @location(0) lifespan: f32,
-          // @location(0) cell: vec2f,
+          @location(1) alpha: f32,
         };
 
         @group(0) @binding(0) var<storage> particleStates: array<f32>;
@@ -273,7 +265,7 @@ export class FlameShader extends Shader {
         }
 
         fn particleScale(lifespan: f32) -> f32 {
-          let fullSizeBegin = 0.9;
+          let fullSizeBegin = 0.85;
           let fullSizeEnd = 0.8;
 
           if (lifespan > fullSizeBegin) {
@@ -296,12 +288,17 @@ export class FlameShader extends Shader {
           var output: VertexOutput;
           output.pos = vec4f(pos, 0, 1);
           output.lifespan = lifespan;
+          if (input.pos.x == 0 && input.pos.y == 0) {
+            output.alpha = scale;
+          } else {
+            output.alpha = 0;
+          }
           return output;
         }
 
         @fragment
         fn fragmentMain(input: VertexOutput) -> @location(0) vec4f {
-          return vec4f(1, input.lifespan, input.lifespan * 2 - 1, 0.2); // rgba
+          return vec4f(2, input.lifespan * 1.5, input.lifespan * 2 - 0.75, 1) * input.alpha; // rgba
         }
       `,
     });
