@@ -3,7 +3,7 @@ import { pointOnCircle, randomVector } from './util';
 
 const WORKGROUP_SIZE = 64;
 const PARTICLE_SIZE = 0.1;
-const PARTICLE_COUNT = WORKGROUP_SIZE * 512;
+const PARTICLE_COUNT = WORKGROUP_SIZE * 256;
 const SPEED = 0.004;
 const GRAVITY = 0.005;
 const PARTICLE_INTERVAL = 5;
