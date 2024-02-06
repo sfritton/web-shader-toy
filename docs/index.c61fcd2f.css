@@ -134,7 +134,7 @@ main {
 }
 
 main canvas {
-  margin: var(--gap) 0;
+  margin: var(--gap) 0 0;
   max-width: 100%;
   display: block;
 }
@@ -170,4 +170,21 @@ main canvas {
   display: none;
 }
 
-/*# sourceMappingURL=index.d20856ec.css.map */
+.stats {
+  margin-top: calc(var(--gap) * -1.4);
+  padding-left: calc(var(--gap) * .6);
+  color: #fff;
+  font-size: 14px;
+  font-family: var(--mono);
+  transition: opacity .3s;
+}
+
+.stats #fps {
+  font-weight: bold;
+}
+
+.stats:has( > :empty) {
+  opacity: 0;
+}
+
+/*# sourceMappingURL=index.c61fcd2f.css.map */
