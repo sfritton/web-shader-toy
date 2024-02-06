@@ -66,33 +66,44 @@ class $50ad2468206126ad$export$462bb059fed9d9e5 {
 }
 
 
+const $4e939e94d233ed5b$export$eb912ff306213ab3 = (radius, angle)=>{
+    const x = radius * Math.cos(angle);
+    const y = radius * Math.sin(angle);
+    return {
+        x: x,
+        y: y
+    };
+};
+const $4e939e94d233ed5b$export$c4293a6a9b6ab33a = (radius)=>{
+    const r = Math.sqrt(Math.random()) * radius;
+    const angle = Math.random() * 2 * Math.PI;
+    return $4e939e94d233ed5b$export$eb912ff306213ab3(r, angle);
+};
+
+
 const $c8a6c04c3ac47780$var$WORKGROUP_SIZE = 64;
-const $c8a6c04c3ac47780$var$PARTICLE_SIZE = 0.03;
+const $c8a6c04c3ac47780$var$PARTICLE_SIZE = 0.1;
 const $c8a6c04c3ac47780$var$PARTICLE_COUNT = $c8a6c04c3ac47780$var$WORKGROUP_SIZE * 512;
-const $c8a6c04c3ac47780$var$PARTICLE_WIDTH = 0.6;
-const $c8a6c04c3ac47780$var$PARTICLE_CENTER_Y = -0.4;
 const $c8a6c04c3ac47780$var$SPEED = 0.004;
 const $c8a6c04c3ac47780$var$GRAVITY = 0.005;
 const $c8a6c04c3ac47780$var$PARTICLE_INTERVAL = 5;
 const $c8a6c04c3ac47780$var$DECAY_RATE = 0.004;
 const $c8a6c04c3ac47780$var$ORIGIN_RADIUS = 0.2;
 const $c8a6c04c3ac47780$var$ORIGIN_Y = -0.4;
-const $c8a6c04c3ac47780$var$VERTICES = new Float32Array([
-    // Triangle 1 [ x,y, x,y, ...]
-    -$c8a6c04c3ac47780$var$PARTICLE_WIDTH,
-    $c8a6c04c3ac47780$var$PARTICLE_CENTER_Y,
-    0,
-    -1,
-    $c8a6c04c3ac47780$var$PARTICLE_WIDTH,
-    $c8a6c04c3ac47780$var$PARTICLE_CENTER_Y,
-    // Triangle 2 [ x,y, x,y, ...]
-    -$c8a6c04c3ac47780$var$PARTICLE_WIDTH,
-    $c8a6c04c3ac47780$var$PARTICLE_CENTER_Y,
-    $c8a6c04c3ac47780$var$PARTICLE_WIDTH,
-    $c8a6c04c3ac47780$var$PARTICLE_CENTER_Y,
-    0,
-    1
-]);
+const $c8a6c04c3ac47780$var$TRIANGLE_COUNT = 32;
+const $c8a6c04c3ac47780$var$THETA = 2 * Math.PI / $c8a6c04c3ac47780$var$TRIANGLE_COUNT;
+const $c8a6c04c3ac47780$var$VERTICES = new Float32Array($c8a6c04c3ac47780$var$TRIANGLE_COUNT * 6); // 6 for the x,y coordinates of the three points on the triangle
+for(let triangleIndex = 0; triangleIndex < $c8a6c04c3ac47780$var$TRIANGLE_COUNT; triangleIndex++){
+    const i = triangleIndex * 6;
+    const point1 = (0, $4e939e94d233ed5b$export$eb912ff306213ab3)(1, triangleIndex * $c8a6c04c3ac47780$var$THETA);
+    const point2 = (0, $4e939e94d233ed5b$export$eb912ff306213ab3)(1, (triangleIndex + 1) * $c8a6c04c3ac47780$var$THETA);
+    $c8a6c04c3ac47780$var$VERTICES[i] = 0;
+    $c8a6c04c3ac47780$var$VERTICES[i + 1] = 0;
+    $c8a6c04c3ac47780$var$VERTICES[i + 2] = point1.x;
+    $c8a6c04c3ac47780$var$VERTICES[i + 3] = point1.y;
+    $c8a6c04c3ac47780$var$VERTICES[i + 4] = point2.x;
+    $c8a6c04c3ac47780$var$VERTICES[i + 5] = point2.y;
+}
 class $c8a6c04c3ac47780$export$b9202086c45b387e extends (0, $50ad2468206126ad$export$462bb059fed9d9e5) {
     setup() {
         const particleCounter = document.getElementById("particle-count");
@@ -131,19 +142,9 @@ class $c8a6c04c3ac47780$export$b9202086c45b387e extends (0, $50ad2468206126ad$ex
      * ]
      *
      */ const particleStates = new Float32Array($c8a6c04c3ac47780$var$PARTICLE_COUNT * $c8a6c04c3ac47780$var$PARTICLE_INTERVAL);
-        const randomVector = ()=>{
-            const radius = Math.sqrt(Math.random()) * $c8a6c04c3ac47780$var$ORIGIN_RADIUS;
-            const angle = Math.random() * 2 * Math.PI;
-            const x = radius * Math.cos(angle);
-            const y = radius * Math.sin(angle);
-            return {
-                x: x,
-                y: y
-            };
-        };
         for(let i = 0; i < particleStates.length; i += $c8a6c04c3ac47780$var$PARTICLE_INTERVAL){
-            const position = randomVector();
-            const velocity = randomVector();
+            const position = (0, $4e939e94d233ed5b$export$c4293a6a9b6ab33a)($c8a6c04c3ac47780$var$ORIGIN_RADIUS);
+            const velocity = (0, $4e939e94d233ed5b$export$c4293a6a9b6ab33a)($c8a6c04c3ac47780$var$ORIGIN_RADIUS);
             particleStates[i] = position.x;
             particleStates[i + 1] = position.y + $c8a6c04c3ac47780$var$ORIGIN_Y;
             particleStates[i + 2] = velocity.x;
@@ -317,7 +318,7 @@ class $c8a6c04c3ac47780$export$b9202086c45b387e extends (0, $50ad2468206126ad$ex
         struct VertexOutput {
           @builtin(position) pos: vec4f,
           @location(0) lifespan: f32,
-          // @location(0) cell: vec2f,
+          @location(1) alpha: f32,
         };
 
         @group(0) @binding(0) var<storage> particleStates: array<f32>;
@@ -328,7 +329,7 @@ class $c8a6c04c3ac47780$export$b9202086c45b387e extends (0, $50ad2468206126ad$ex
         }
 
         fn particleScale(lifespan: f32) -> f32 {
-          let fullSizeBegin = 0.9;
+          let fullSizeBegin = 0.85;
           let fullSizeEnd = 0.8;
 
           if (lifespan > fullSizeBegin) {
@@ -351,12 +352,17 @@ class $c8a6c04c3ac47780$export$b9202086c45b387e extends (0, $50ad2468206126ad$ex
           var output: VertexOutput;
           output.pos = vec4f(pos, 0, 1);
           output.lifespan = lifespan;
+          if (input.pos.x == 0 && input.pos.y == 0) {
+            output.alpha = scale;
+          } else {
+            output.alpha = 0;
+          }
           return output;
         }
 
         @fragment
         fn fragmentMain(input: VertexOutput) -> @location(0) vec4f {
-          return vec4f(1, input.lifespan, input.lifespan * 2 - 1, 0.2); // rgba
+          return vec4f(2, input.lifespan * 1.5, input.lifespan * 2 - 0.75, 1) * input.alpha; // rgba
         }
       `
         });
@@ -438,4 +444,4 @@ const $35d6c5b58b8fcd66$var$canvas = document.querySelector("canvas");
 new (0, $c8a6c04c3ac47780$export$b9202086c45b387e)($35d6c5b58b8fcd66$var$canvas);
 
 
-//# sourceMappingURL=index.e7ac65af.js.map
+//# sourceMappingURL=index.47c87e5f.js.map
