@@ -3,7 +3,6 @@ import { Shader } from './Shader';
 const WORKGROUP_SIZE = 64;
 const PARTICLE_SIZE = 0.03;
 const PARTICLE_COUNT = WORKGROUP_SIZE * 512;
-console.log(`${Math.floor(PARTICLE_COUNT / 1000)}k particles`);
 const PARTICLE_WIDTH = 0.6;
 const PARTICLE_CENTER_Y = -0.4;
 const SPEED = 0.004;
@@ -35,12 +34,13 @@ export class FlameShader extends Shader {
   renderPipeline!: GPURenderPipeline;
   computePipeline!: GPUComputePipeline;
   bindGroups!: GPUBindGroup[];
-  shouldRequestAnimationFrame = true;
-
-  avgDeltaT = 0;
-  step = 0;
+  frameLength = 0;
 
   setup() {
+    const particleCounter = document.getElementById('particle-count');
+    if (particleCounter) {
+      particleCounter.textContent = `${Math.floor(PARTICLE_COUNT / 1000)}k`;
+    }
     /*
     ┍━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┑
     │ PARTICLE SHAPE                  │
@@ -337,10 +337,6 @@ export class FlameShader extends Shader {
   }
 
   update(deltaT?: number) {
-    if (deltaT) {
-      this.avgDeltaT = (this.avgDeltaT * this.step + deltaT) / (this.step + 1);
-      if (this.step % 60 === 0) console.log(`${Math.floor(1000 / this.avgDeltaT)} FPS`);
-    }
     const encoder = this.device.createCommandEncoder();
 
     // Start a compute pass

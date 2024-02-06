@@ -59,7 +59,7 @@ main {
   & canvas {
     display: block;
     max-width: 100%;
-    margin: var(--gap) 0;
+    margin: var(--gap) 0 0;
   }
 }
 
@@ -91,5 +91,22 @@ main {
 
   &:not(.visible) {
     display: none;
+  }
+}
+
+.stats {
+  margin-top: calc(var(--gap) * -1.4);
+  padding-left: calc(var(--gap) * 0.6);
+  color: #fff;
+  font-size: 14px;
+  font-family: var(--mono);
+  transition: opacity 300ms;
+
+  & #fps {
+    font-weight: bold;
+  }
+
+  &:has(> :empty) {
+    opacity: 0;
   }
 }
