@@ -2,7 +2,7 @@ import { Shader } from './Shader';
 
 const WORKGROUP_SIZE = 64;
 const PARTICLE_SIZE = 0.03;
-const PARTICLE_COUNT = WORKGROUP_SIZE * 1024;
+const PARTICLE_COUNT = WORKGROUP_SIZE * 512;
 console.log(`${Math.floor(PARTICLE_COUNT / 1000)}k particles`);
 const PARTICLE_WIDTH = 0.6;
 const PARTICLE_CENTER_Y = -0.4;
