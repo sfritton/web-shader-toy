@@ -1,7 +1,15 @@
 class $50ad2468206126ad$export$462bb059fed9d9e5 {
+    calculateDeltaT(currMS) {
+        if (this.prevMS === undefined) this.prevMS = currMS;
+        const deltaT = currMS - this.prevMS;
+        if (this.avgDeltaT === 0) this.avgDeltaT = deltaT;
+        else if (deltaT / this.avgDeltaT < 5) this.avgDeltaT = (this.avgDeltaT * this.step + deltaT) / (this.step + 1);
+        this.prevMS = currMS;
+        return deltaT;
+    }
     // Make sure WebGPU is supported, set up the device and the canvas
     async init(canvas) {
-        var _this__context;
+        var _this__canvas, _this__context;
         if (!navigator.gpu) {
             var _document_getElementById;
             (_document_getElementById = document.getElementById("no-web-gpu")) === null || _document_getElementById === void 0 ? void 0 : _document_getElementById.classList.add("visible");
@@ -20,7 +28,8 @@ class $50ad2468206126ad$export$462bb059fed9d9e5 {
             throw Error("Couldn\u2019t request WebGPU logical device.");
         }
         this.device = device;
-        this._context = canvas === null || canvas === void 0 ? void 0 : canvas.getContext("webgpu");
+        this._canvas = canvas;
+        this._context = (_this__canvas = this._canvas) === null || _this__canvas === void 0 ? void 0 : _this__canvas.getContext("webgpu");
         this.canvasFormat = navigator.gpu.getPreferredCanvasFormat();
         (_this__context = this._context) === null || _this__context === void 0 ? void 0 : _this__context.configure({
             device: this.device,
@@ -35,6 +44,14 @@ class $50ad2468206126ad$export$462bb059fed9d9e5 {
         }
         return this._context;
     }
+    get canvas() {
+        if (!this._canvas) {
+            var _document_getElementById;
+            (_document_getElementById = document.getElementById("no-canvas")) === null || _document_getElementById === void 0 ? void 0 : _document_getElementById.classList.add("visible");
+            throw Error("Couldn't get canvas element");
+        }
+        return this._canvas;
+    }
     recordFPS() {
         const fpsElement = document.getElementById("fps");
         if (!fpsElement || this.avgDeltaT <= 0) return;
@@ -42,6 +59,7 @@ class $50ad2468206126ad$export$462bb059fed9d9e5 {
     }
     constructor(canvas){
         this._context = undefined;
+        this._canvas = undefined;
         /** Milliseconds between frames. Set to 0 for maximum FPS. */ this.frameLength = 200;
         this.prevMS = undefined;
         this.avgDeltaT = 0;
@@ -51,10 +69,7 @@ class $50ad2468206126ad$export$462bb059fed9d9e5 {
             this.setup();
             if (this.frameLength === 0) {
                 const step = (currMS)=>{
-                    if (this.prevMS === undefined) this.prevMS = currMS;
-                    const deltaT = currMS - this.prevMS;
-                    this.avgDeltaT = (this.avgDeltaT * this.step + deltaT) / (this.step + 1);
-                    this.prevMS = currMS;
+                    const deltaT = this.calculateDeltaT(currMS);
                     requestAnimationFrame(step);
                     this.update(deltaT);
                 };
@@ -362,7 +377,7 @@ class $c8a6c04c3ac47780$export$b9202086c45b387e extends (0, $50ad2468206126ad$ex
 
         @fragment
         fn fragmentMain(input: VertexOutput) -> @location(0) vec4f {
-          return vec4f(1 + input.lifespan, input.lifespan * 1.5, input.lifespan * 2 - 0.75, 1) * input.alpha; // rgba
+          return vec4f(0.4 + input.lifespan * 2, input.lifespan * 1.5, input.lifespan * 2 - 0.75, 1) * input.alpha; // rgba
         }
       `
         });
@@ -396,8 +411,65 @@ class $c8a6c04c3ac47780$export$b9202086c45b387e extends (0, $50ad2468206126ad$ex
                 ]
             }
         });
+        const backgroundShaderModule = this.device.createShaderModule({
+            label: "Background render shader",
+            code: /* wgsl */ `
+        struct VertexOutput {
+          @builtin(position) pos: vec4f,
+          @location(1) alpha: f32,
+        };
+        
+        @vertex
+        fn vertexMain(@location(0) pos: vec2f) -> VertexOutput {
+
+          var output: VertexOutput;
+          output.pos = vec4f(pos.x * 2, pos.y * 2 + ${$c8a6c04c3ac47780$var$ORIGIN_Y}, 0, 1);
+          if (pos.x == 0 && pos.y == 0) {
+            output.alpha = 1;
+          } else {
+            output.alpha = 0;
+          }
+          return output;
+        }
+
+        @fragment
+        fn fragmentMain(input: VertexOutput) -> @location(0) vec4f {
+          return vec4f(1,0.8,0.8,1) * input.alpha * 0.35; // rgba
+        }
+      `
+        });
+        this.backgroundPipeline = this.device.createRenderPipeline({
+            label: "Background render pipeline",
+            layout: "auto",
+            vertex: {
+                module: backgroundShaderModule,
+                entryPoint: "vertexMain",
+                buffers: [
+                    vertexBufferLayout
+                ]
+            },
+            fragment: {
+                module: backgroundShaderModule,
+                entryPoint: "fragmentMain",
+                targets: [
+                    {
+                        format: this.canvasFormat,
+                        blend: {
+                            color: {
+                                srcFactor: "one",
+                                dstFactor: "one-minus-src-alpha"
+                            },
+                            alpha: {
+                                srcFactor: "one",
+                                dstFactor: "one-minus-src-alpha"
+                            }
+                        }
+                    }
+                ]
+            }
+        });
     }
-    update(deltaT) {
+    update() {
         const encoder = this.device.createCommandEncoder();
         // Start a compute pass
         const computePass = encoder.beginComputePass();
@@ -414,15 +486,18 @@ class $c8a6c04c3ac47780$export$b9202086c45b387e extends (0, $50ad2468206126ad$ex
                     view: this.context.getCurrentTexture().createView(),
                     loadOp: "clear",
                     clearValue: {
-                        r: 0.2,
-                        g: 0.2,
-                        b: 0.3,
+                        r: 0,
+                        g: 0,
+                        b: 0.15,
                         a: 1
                     },
                     storeOp: "store"
                 }
             ]
         });
+        pass.setPipeline(this.backgroundPipeline);
+        pass.setVertexBuffer(0, this.vertexBuffer);
+        pass.draw($c8a6c04c3ac47780$var$VERTICES.length / 2);
         pass.setPipeline(this.renderPipeline);
         pass.setVertexBuffer(0, this.vertexBuffer);
         pass.setBindGroup(0, this.bindGroups[this.step % 2]);
@@ -444,4 +519,4 @@ const $35d6c5b58b8fcd66$var$canvas = document.querySelector("canvas");
 new (0, $c8a6c04c3ac47780$export$b9202086c45b387e)($35d6c5b58b8fcd66$var$canvas);
 
 
-//# sourceMappingURL=index.906307bf.js.map
+//# sourceMappingURL=index.d5edbc8f.js.map
