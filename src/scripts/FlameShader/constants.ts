@@ -1,0 +1,9 @@
+export const WORKGROUP_SIZE = 64;
+export const PARTICLE_SIZE = 0.1;
+export const PARTICLE_COUNT = WORKGROUP_SIZE * 128;
+export const SPEED = 0.004;
+export const GRAVITY = 0.005;
+export const PARTICLE_INTERVAL = 5;
+export const DECAY_RATE = 0.004;
+export const ORIGIN_RADIUS = 0.2;
+export const ORIGIN_Y = -0.4;

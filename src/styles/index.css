@@ -73,6 +73,13 @@ main {
   clip: rect(0px, 0px, 0px, 0px);
 }
 
+.subtitle {
+  margin-top: calc(var(--gap) / 4);
+  font-size: 19px;
+  color: #666;
+  font-weight: 200;
+}
+
 .error-box > div {
   border: 1px solid #c00;
   background: #fdd;
