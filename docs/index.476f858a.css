@@ -97,7 +97,7 @@ body {
 }
 
 h1 {
-  margin: 4rem 0 0;
+  margin: 0;
   font-size: 40px;
 }
 
@@ -127,15 +127,15 @@ a:hover {
 
 main {
   max-width: calc(var(--canvas-width)  + calc(var(--gap) * 2));
-  padding: var(--gap);
+  padding: calc(var(--gap) * 4) var(--gap) calc(var(--gap) * 8);
   background: #fff;
-  min-height: 100vh;
-  margin: 20px auto 0;
+  margin: 0 auto;
 }
 
 main canvas {
   margin: var(--gap) 0 0;
   background: #000026;
+  border-radius: 2%;
   max-width: 100%;
   display: block;
 }
@@ -195,4 +195,4 @@ main canvas {
   display: none;
 }
 
-/*# sourceMappingURL=index.ba2fd247.css.map */
+/*# sourceMappingURL=index.476f858a.css.map */
