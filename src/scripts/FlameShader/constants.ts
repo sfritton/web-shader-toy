@@ -6,4 +6,4 @@ export const GRAVITY = 0.005;
 export const PARTICLE_INTERVAL = 5;
 export const DECAY_RATE = 0.004;
 export const ORIGIN_RADIUS = 0.2;
-export const ORIGIN_Y = -0.4;
+export const ORIGIN_Y = -0.3;
