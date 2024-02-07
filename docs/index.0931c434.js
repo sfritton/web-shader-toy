@@ -6,7 +6,6 @@ function $parcel$export(e, n, v, s) {
 function $parcel$interopDefault(a) {
   return a && a.__esModule ? a.default : a;
 }
-// TODO: update config so /index isn't necessary
 class $50ad2468206126ad$export$462bb059fed9d9e5 {
     calculateDeltaT(currMS) {
         if (this.prevMS === undefined) this.prevMS = currMS;
@@ -62,9 +61,21 @@ class $50ad2468206126ad$export$462bb059fed9d9e5 {
         return this._canvas;
     }
     recordFPS() {
+        const params = new URLSearchParams(window.location.search);
+        const shouldShowStats = params.has("stats", "true");
         const fpsElement = document.getElementById("fps");
-        if (!fpsElement || this.avgDeltaT <= 0) return;
+        if (!fpsElement || this.avgDeltaT <= 0 || !shouldShowStats) return;
         fpsElement.textContent = `${Math.floor(1000 / this.avgDeltaT)} FPS`;
+    }
+    update(deltaT) {
+        const encoder = this.device.createCommandEncoder();
+        this.updateCompute(encoder, deltaT);
+        this.step++;
+        this.updateRender(encoder, deltaT);
+        // Finish the command buffer and immediately submit it.
+        this.device.queue.submit([
+            encoder.finish()
+        ]);
     }
     constructor(canvas){
         this._context = undefined;
@@ -72,8 +83,7 @@ class $50ad2468206126ad$export$462bb059fed9d9e5 {
         /** Milliseconds between frames. Set to 0 for maximum FPS. */ this.frameLength = 200;
         this.prevMS = undefined;
         this.avgDeltaT = 0;
-        // TODO: handle incrementation in Shader class by separating compute and render functions
-        /** The current step of the animation, increment it in your update function. */ this.step = 0;
+        /** The current step of the animation. */ this.step = 0;
         this.init(canvas).then(()=>{
             this.setup();
             if (this.frameLength === 0) {
@@ -163,7 +173,7 @@ for(let triangleIndex = 0; triangleIndex < $826c8f98e2b7c15f$var$TRIANGLE_COUNT;
 class $826c8f98e2b7c15f$export$b9202086c45b387e extends (0, $50ad2468206126ad$export$462bb059fed9d9e5) {
     setup() {
         const particleCounter = document.getElementById("particle-count");
-        if (particleCounter) particleCounter.textContent = `${Math.floor((0, $1ba33acf88ea8827$export$ffc0241869fe445) / 1000)}k`;
+        if (particleCounter) particleCounter.textContent = `${Math.floor((0, $1ba33acf88ea8827$export$ffc0241869fe445) / 1000)},000`;
         /*
     ┍━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┑
     │ PARTICLE SHAPE                  │
@@ -401,17 +411,15 @@ class $826c8f98e2b7c15f$export$b9202086c45b387e extends (0, $50ad2468206126ad$ex
             }
         });
     }
-    update() {
-        const encoder = this.device.createCommandEncoder();
-        // Start a compute pass
+    updateCompute(encoder) {
         const computePass = encoder.beginComputePass();
         computePass.setPipeline(this.computePipeline);
         computePass.setBindGroup(0, this.bindGroups[this.step % 2]);
         const workgroupCount = Math.ceil((0, $1ba33acf88ea8827$export$ffc0241869fe445) / (0, $1ba33acf88ea8827$export$fb78680ee3bd0d21));
         computePass.dispatchWorkgroups(workgroupCount, workgroupCount);
         computePass.end();
-        this.step++;
-        // Start a render pass
+    }
+    updateRender(encoder) {
         const pass = encoder.beginRenderPass({
             colorAttachments: [
                 {
@@ -435,10 +443,6 @@ class $826c8f98e2b7c15f$export$b9202086c45b387e extends (0, $50ad2468206126ad$ex
         pass.setBindGroup(0, this.bindGroups[this.step % 2]);
         pass.draw($826c8f98e2b7c15f$var$VERTICES.length / 2, (0, $1ba33acf88ea8827$export$ffc0241869fe445));
         pass.end();
-        // Finish the command buffer and immediately submit it.
-        this.device.queue.submit([
-            encoder.finish()
-        ]);
     }
     constructor(...args){
         super(...args);
@@ -451,4 +455,4 @@ const $35d6c5b58b8fcd66$var$canvas = document.querySelector("canvas");
 new (0, $826c8f98e2b7c15f$export$b9202086c45b387e)($35d6c5b58b8fcd66$var$canvas);
 
 
-//# sourceMappingURL=index.5a79ff3d.js.map
+//# sourceMappingURL=index.0931c434.js.map

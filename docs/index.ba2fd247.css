@@ -135,6 +135,7 @@ main {
 
 main canvas {
   margin: var(--gap) 0 0;
+  background: #000026;
   max-width: 100%;
   display: block;
 }
@@ -191,7 +192,7 @@ main canvas {
 }
 
 .stats:has( > :empty) {
-  opacity: 0;
+  display: none;
 }
 
-/*# sourceMappingURL=index.7206d145.css.map */
+/*# sourceMappingURL=index.ba2fd247.css.map */
