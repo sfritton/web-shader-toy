@@ -149,6 +149,13 @@ main canvas {
   overflow: hidden;
 }
 
+.subtitle {
+  margin-top: calc(var(--gap) / 4);
+  color: #666;
+  font-size: 19px;
+  font-weight: 200;
+}
+
 .error-box > div {
   padding: 0 var(--gap);
   margin: calc(var(--gap) * 2) 0;
@@ -187,4 +194,4 @@ main canvas {
   opacity: 0;
 }
 
-/*# sourceMappingURL=index.c61fcd2f.css.map */
+/*# sourceMappingURL=index.7206d145.css.map */
