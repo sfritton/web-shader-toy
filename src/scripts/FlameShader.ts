@@ -3,7 +3,7 @@ import { pointOnCircle, randomVector } from './util';
 
 const WORKGROUP_SIZE = 64;
 const PARTICLE_SIZE = 0.1;
-const PARTICLE_COUNT = WORKGROUP_SIZE * 256;
+const PARTICLE_COUNT = WORKGROUP_SIZE * 128;
 const SPEED = 0.004;
 const GRAVITY = 0.005;
 const PARTICLE_INTERVAL = 5;
@@ -11,7 +11,7 @@ const DECAY_RATE = 0.004;
 const ORIGIN_RADIUS = 0.2;
 const ORIGIN_Y = -0.4;
 
-const TRIANGLE_COUNT = 32;
+const TRIANGLE_COUNT = 16;
 const THETA = (2 * Math.PI) / TRIANGLE_COUNT;
 const VERTICES = new Float32Array(TRIANGLE_COUNT * 6); // 6 for the x,y coordinates of the three points on the triangle
 
@@ -298,7 +298,7 @@ export class FlameShader extends Shader {
 
         @fragment
         fn fragmentMain(input: VertexOutput) -> @location(0) vec4f {
-          return vec4f(2, input.lifespan * 1.5, input.lifespan * 2 - 0.75, 1) * input.alpha; // rgba
+          return vec4f(1 + input.lifespan, input.lifespan * 1.5, input.lifespan * 2 - 0.75, 1) * input.alpha; // rgba
         }
       `,
     });
