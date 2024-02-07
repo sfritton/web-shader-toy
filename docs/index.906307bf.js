@@ -83,14 +83,14 @@ const $4e939e94d233ed5b$export$c4293a6a9b6ab33a = (radius)=>{
 
 const $c8a6c04c3ac47780$var$WORKGROUP_SIZE = 64;
 const $c8a6c04c3ac47780$var$PARTICLE_SIZE = 0.1;
-const $c8a6c04c3ac47780$var$PARTICLE_COUNT = $c8a6c04c3ac47780$var$WORKGROUP_SIZE * 256;
+const $c8a6c04c3ac47780$var$PARTICLE_COUNT = $c8a6c04c3ac47780$var$WORKGROUP_SIZE * 128;
 const $c8a6c04c3ac47780$var$SPEED = 0.004;
 const $c8a6c04c3ac47780$var$GRAVITY = 0.005;
 const $c8a6c04c3ac47780$var$PARTICLE_INTERVAL = 5;
 const $c8a6c04c3ac47780$var$DECAY_RATE = 0.004;
 const $c8a6c04c3ac47780$var$ORIGIN_RADIUS = 0.2;
 const $c8a6c04c3ac47780$var$ORIGIN_Y = -0.4;
-const $c8a6c04c3ac47780$var$TRIANGLE_COUNT = 32;
+const $c8a6c04c3ac47780$var$TRIANGLE_COUNT = 16;
 const $c8a6c04c3ac47780$var$THETA = 2 * Math.PI / $c8a6c04c3ac47780$var$TRIANGLE_COUNT;
 const $c8a6c04c3ac47780$var$VERTICES = new Float32Array($c8a6c04c3ac47780$var$TRIANGLE_COUNT * 6); // 6 for the x,y coordinates of the three points on the triangle
 for(let triangleIndex = 0; triangleIndex < $c8a6c04c3ac47780$var$TRIANGLE_COUNT; triangleIndex++){
@@ -362,7 +362,7 @@ class $c8a6c04c3ac47780$export$b9202086c45b387e extends (0, $50ad2468206126ad$ex
 
         @fragment
         fn fragmentMain(input: VertexOutput) -> @location(0) vec4f {
-          return vec4f(2, input.lifespan * 1.5, input.lifespan * 2 - 0.75, 1) * input.alpha; // rgba
+          return vec4f(1 + input.lifespan, input.lifespan * 1.5, input.lifespan * 2 - 0.75, 1) * input.alpha; // rgba
         }
       `
         });
@@ -444,4 +444,4 @@ const $35d6c5b58b8fcd66$var$canvas = document.querySelector("canvas");
 new (0, $c8a6c04c3ac47780$export$b9202086c45b387e)($35d6c5b58b8fcd66$var$canvas);
 
 
-//# sourceMappingURL=index.3e9ac906.js.map
+//# sourceMappingURL=index.906307bf.js.map
