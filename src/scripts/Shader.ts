@@ -1,5 +1,6 @@
 export abstract class Shader {
   private _context: GPUCanvasContext | null | undefined = undefined;
+  private _canvas: HTMLCanvasElement | null | undefined = undefined;
   device!: GPUDevice;
   canvasFormat!: GPUTextureFormat;
   /** Milliseconds between frames. Set to 0 for maximum FPS. */
@@ -15,10 +16,7 @@ export abstract class Shader {
       this.setup();
       if (this.frameLength === 0) {
         const step = (currMS: number) => {
-          if (this.prevMS === undefined) this.prevMS = currMS;
-          const deltaT = currMS - this.prevMS;
-          this.avgDeltaT = (this.avgDeltaT * this.step + deltaT) / (this.step + 1);
-          this.prevMS = currMS;
+          const deltaT = this.calculateDeltaT(currMS);
 
           requestAnimationFrame(step);
           this.update(deltaT);
@@ -31,6 +29,24 @@ export abstract class Shader {
 
       setInterval(() => this.recordFPS(), 1000);
     });
+  }
+
+  calculateDeltaT(currMS: number) {
+    if (this.prevMS === undefined) this.prevMS = currMS;
+
+    const deltaT = currMS - this.prevMS;
+
+    if (this.avgDeltaT === 0) {
+      this.avgDeltaT = deltaT;
+      // Don't update the average if the current frame is a 500% increase
+      // This is likely due to an inactive browser tab
+    } else if (deltaT / this.avgDeltaT < 5) {
+      this.avgDeltaT = (this.avgDeltaT * this.step + deltaT) / (this.step + 1);
+    }
+
+    this.prevMS = currMS;
+
+    return deltaT;
   }
 
   // Make sure WebGPU is supported, set up the device and the canvas
@@ -55,7 +71,8 @@ export abstract class Shader {
 
     this.device = device;
 
-    this._context = canvas?.getContext('webgpu');
+    this._canvas = canvas;
+    this._context = this._canvas?.getContext('webgpu');
 
     this.canvasFormat = navigator.gpu.getPreferredCanvasFormat();
     this._context?.configure({ device: this.device, format: this.canvasFormat });
@@ -68,6 +85,15 @@ export abstract class Shader {
     }
 
     return this._context;
+  }
+
+  get canvas() {
+    if (!this._canvas) {
+      document.getElementById('no-canvas')?.classList.add('visible');
+      throw Error("Couldn't get canvas element");
+    }
+
+    return this._canvas;
   }
 
   recordFPS() {

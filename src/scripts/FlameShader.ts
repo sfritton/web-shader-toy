@@ -33,6 +33,7 @@ for (let triangleIndex = 0; triangleIndex < TRIANGLE_COUNT; triangleIndex++) {
 export class FlameShader extends Shader {
   vertexBuffer!: GPUBuffer;
   renderPipeline!: GPURenderPipeline;
+  backgroundPipeline!: GPURenderPipeline;
   computePipeline!: GPUComputePipeline;
   bindGroups!: GPUBindGroup[];
   frameLength = 0;
@@ -298,7 +299,7 @@ export class FlameShader extends Shader {
 
         @fragment
         fn fragmentMain(input: VertexOutput) -> @location(0) vec4f {
-          return vec4f(1 + input.lifespan, input.lifespan * 1.5, input.lifespan * 2 - 0.75, 1) * input.alpha; // rgba
+          return vec4f(0.4 + input.lifespan * 2, input.lifespan * 1.5, input.lifespan * 2 - 0.75, 1) * input.alpha; // rgba
         }
       `,
     });
@@ -331,9 +332,66 @@ export class FlameShader extends Shader {
         ],
       },
     });
+
+    const backgroundShaderModule = this.device.createShaderModule({
+      label: 'Background render shader',
+      code: /* wgsl */ `
+        struct VertexOutput {
+          @builtin(position) pos: vec4f,
+          @location(1) alpha: f32,
+        };
+        
+        @vertex
+        fn vertexMain(@location(0) pos: vec2f) -> VertexOutput {
+
+          var output: VertexOutput;
+          output.pos = vec4f(pos.x * 2, pos.y * 2 + ${ORIGIN_Y}, 0, 1);
+          if (pos.x == 0 && pos.y == 0) {
+            output.alpha = 1;
+          } else {
+            output.alpha = 0;
+          }
+          return output;
+        }
+
+        @fragment
+        fn fragmentMain(input: VertexOutput) -> @location(0) vec4f {
+          return vec4f(1,0.8,0.8,1) * input.alpha * 0.35; // rgba
+        }
+      `,
+    });
+
+    this.backgroundPipeline = this.device.createRenderPipeline({
+      label: 'Background render pipeline',
+      layout: 'auto',
+      vertex: {
+        module: backgroundShaderModule,
+        entryPoint: 'vertexMain',
+        buffers: [vertexBufferLayout],
+      },
+      fragment: {
+        module: backgroundShaderModule,
+        entryPoint: 'fragmentMain',
+        targets: [
+          {
+            format: this.canvasFormat,
+            blend: {
+              color: {
+                srcFactor: 'one',
+                dstFactor: 'one-minus-src-alpha',
+              },
+              alpha: {
+                srcFactor: 'one',
+                dstFactor: 'one-minus-src-alpha',
+              },
+            },
+          },
+        ],
+      },
+    });
   }
 
-  update(deltaT?: number) {
+  update() {
     const encoder = this.device.createCommandEncoder();
 
     // Start a compute pass
@@ -355,11 +413,15 @@ export class FlameShader extends Shader {
         {
           view: this.context.getCurrentTexture().createView(),
           loadOp: 'clear',
-          clearValue: { r: 0.2, g: 0.2, b: 0.3, a: 1 },
+          clearValue: { r: 0, g: 0, b: 0.15, a: 1 },
           storeOp: 'store',
         },
       ],
     });
+
+    pass.setPipeline(this.backgroundPipeline);
+    pass.setVertexBuffer(0, this.vertexBuffer);
+    pass.draw(VERTICES.length / 2);
 
     pass.setPipeline(this.renderPipeline);
     pass.setVertexBuffer(0, this.vertexBuffer);
