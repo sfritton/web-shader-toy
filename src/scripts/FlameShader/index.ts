@@ -8,11 +8,7 @@ import {
   ORIGIN_Y,
 } from './constants';
 
-import {
-  computeParticlesShader,
-  renderBackgroundShader,
-  renderParticlesShader,
-} from './shaders/index';
+import { computeParticlesShader, renderBackgroundShader, renderParticlesShader } from './shaders';
 
 const TRIANGLE_COUNT = 16;
 const THETA = (2 * Math.PI) / TRIANGLE_COUNT;
@@ -44,7 +40,7 @@ export class FlameShader extends Shader {
   setup() {
     const particleCounter = document.getElementById('particle-count');
     if (particleCounter) {
-      particleCounter.textContent = `${Math.floor(PARTICLE_COUNT / 1000)}k`;
+      particleCounter.textContent = `${Math.floor(PARTICLE_COUNT / 1000)},000`;
     }
     /*
     ┍━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┑
@@ -285,10 +281,7 @@ export class FlameShader extends Shader {
     });
   }
 
-  update() {
-    const encoder = this.device.createCommandEncoder();
-
-    // Start a compute pass
+  updateCompute(encoder: GPUCommandEncoder) {
     const computePass = encoder.beginComputePass();
 
     computePass.setPipeline(this.computePipeline);
@@ -298,10 +291,9 @@ export class FlameShader extends Shader {
     computePass.dispatchWorkgroups(workgroupCount, workgroupCount);
 
     computePass.end();
+  }
 
-    this.step++;
-
-    // Start a render pass
+  updateRender(encoder: GPUCommandEncoder) {
     const pass = encoder.beginRenderPass({
       colorAttachments: [
         {
@@ -323,8 +315,5 @@ export class FlameShader extends Shader {
     pass.draw(VERTICES.length / 2, PARTICLE_COUNT);
 
     pass.end();
-
-    // Finish the command buffer and immediately submit it.
-    this.device.queue.submit([encoder.finish()]);
   }
 }

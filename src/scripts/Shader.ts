@@ -7,8 +7,7 @@ export abstract class Shader {
   frameLength: number = 200;
   prevMS: number | undefined = undefined;
   avgDeltaT = 0;
-  // TODO: handle incrementation in Shader class by separating compute and render functions
-  /** The current step of the animation, increment it in your update function. */
+  /** The current step of the animation. */
   step = 0;
 
   constructor(canvas: HTMLCanvasElement | null) {
@@ -97,9 +96,11 @@ export abstract class Shader {
   }
 
   recordFPS() {
+    const params = new URLSearchParams(window.location.search);
+    const shouldShowStats = params.has('stats', 'true');
     const fpsElement = document.getElementById('fps');
 
-    if (!fpsElement || this.avgDeltaT <= 0) return;
+    if (!fpsElement || this.avgDeltaT <= 0 || !shouldShowStats) return;
 
     fpsElement.textContent = `${Math.floor(1000 / this.avgDeltaT)} FPS`;
   }
@@ -107,6 +108,20 @@ export abstract class Shader {
   /** Put one-time stuff here. Access this.context and this.device */
   abstract setup(): void;
 
-  /** Put render step here. This will be run every 200ms */
-  abstract update(deltaT?: number): void;
+  update(deltaT?: number) {
+    const encoder = this.device.createCommandEncoder();
+
+    this.updateCompute(encoder, deltaT);
+    this.step++;
+    this.updateRender(encoder, deltaT);
+
+    // Finish the command buffer and immediately submit it.
+    this.device.queue.submit([encoder.finish()]);
+  }
+
+  /** Put compute step here. This will be run every frame. */
+  abstract updateCompute(encoder: GPUCommandEncoder, deltaT?: number): void;
+
+  /** Put render step here. This will be run every frame, following `updateCompute`. */
+  abstract updateRender(encoder: GPUCommandEncoder, deltaT?: number): void;
 }

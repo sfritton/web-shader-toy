@@ -1,5 +1,4 @@
-// TODO: update config so /index isn't necessary
-import { FlameShader } from './FlameShader/index';
+import { FlameShader } from './FlameShader';
 
 const canvas = document.querySelector<HTMLCanvasElement>('canvas');
 
