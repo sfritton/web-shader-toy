@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=2, interactive-widget=overlays-content">
     <link rel="icon" href="favicon-52.e56febcd.png" sizes="52x52">
-    <link rel="stylesheet" href="index.476f858a.css">
+    <link rel="stylesheet" href="index.3241394c.css">
   </head>
   <body>
     <main>
@@ -24,8 +24,21 @@
         <div id="no-adapter">
           <h3>❌ Unable to request WebGPU adapter</h3>
           <p>
-            It's still unclear to me what the cause of this error might be. Try refreshing the page.
+            Your browser supports WebGPU, but was unable to access your device's GPU. If using
+            Chrome, try the following:
           </p>
+          <ul>
+            <li>
+              Make sure Chrome's "Use graphics acceleration when available" setting is turned on.
+            </li>
+            <li>
+              Try turning on the
+              <span class="flag">chrome://flags/#enable-unsafe-webgpu</span> flag. If on Linux, also
+              turn on the <span class="flag">chrome://flags/#enable-vulkan</span> flag. Then restart
+              Chrome.
+            </li>
+          </ul>
+          <p>Another possibility is that your GPU hardware is incompatible with WebGPU.</p>
         </div>
         <div id="no-device">
           <h3>❌ Unable to request WebGPU logical device</h3>
